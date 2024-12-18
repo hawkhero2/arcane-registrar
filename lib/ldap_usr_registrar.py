@@ -1,14 +1,17 @@
 from paramiko import SSHClient
-import yaml
+from dotenv import load_dotenv
+import os
+
 
 def create_ldap_user(username, fullname, password):
     # Define SSH credentials
-    with open("ssh_config.yaml") as f:
-        config = yaml.safe_load(f)
-
+    load_dotenv()
     ssh = SSHClient()
     ssh.load_system_host_keys()
-    ssh.connect(hostname="10.100.0.30", username=config["user"], password=config["password"])
+    print("Attempting to connect to 10.100.0.30")
+    print(f"Username: {os.getenv('SSH_USER')}")
+    print(f"Password: {os.getenv('SSH_PASSWORD')}")
+    ssh.connect(hostname="10.100.0.30", username=os.getenv('SSH_USER'), password=os.getenv('SSH_PASSWORD'))
 
     _stdin, _stdout, _stderr = ssh.exec_command(f"""cat <<EOF > /tmp/filename.ldif
     # Start of {username}
@@ -24,6 +27,9 @@ def create_ldap_user(username, fullname, password):
     mail: {username}@hometest.ro
     userPassword: {password}
     """)
+    print(_stdout.read().decode())
+    print(_stderr.read().decode())
+    _stdin, _stdout, _stderr = ssh.exec_command("ldapmodify -x -c \"dc=hometest,dc=ro\" -H ldap://10.100.0.30 -D \"uid=andrei123,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -a -f /tmp/filename.ldif")
     print(_stdout.read().decode())
     print(_stderr.read().decode())
     ssh.close()

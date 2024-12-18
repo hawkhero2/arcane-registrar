@@ -1,5 +1,7 @@
+.env
 tests.ps1
 output_ldapsearch
 ssh_config.yaml
 arcane_creator.ps1
 ldap_user_registrar.psm1
+__pycache__
