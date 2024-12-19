@@ -8,4 +8,7 @@ parser.add_argument('--fullname', help='Full name of the user')
 parser.add_argument('--password', help='Password for the user')
 args = parser.parse_args()
 
-create_ldap_user(args.username, args.fullname, args.password)
+if args.username is None or args.fullname is None or args.password is None:
+    print("Missing arguments --username, --fullname or --password") 
+else:
+    create_ldap_user(args.username, args.fullname, args.password)

@@ -2,19 +2,20 @@ from paramiko import SSHClient
 from dotenv import load_dotenv
 import os
 
-
+# https://docs.oracle.com/cd/E22289_01/html/821-1279/ldapmodify.html
 def create_ldap_user(username, fullname, password):
     # Define SSH credentials
     load_dotenv()
     ssh = SSHClient()
     ssh.load_system_host_keys()
+
     print("Attempting to connect to 10.100.0.30")
     print(f"Username: {os.getenv('SSH_USER')}")
     print(f"Password: {os.getenv('SSH_PASSWORD')}")
+
     ssh.connect(hostname="10.100.0.30", username=os.getenv('SSH_USER'), password=os.getenv('SSH_PASSWORD'))
 
     _stdin, _stdout, _stderr = ssh.exec_command(f"""cat <<EOF > /tmp/filename.ldif
-    # Start of {username}
     dn: uid={username},cn=users,dc=hometest,dc=ro
     objectclass: top
     objectclass: person
