@@ -2,8 +2,14 @@ from paramiko import SSHClient
 from dotenv import load_dotenv
 import os
 
-# https://docs.oracle.com/cd/E22289_01/html/821-1279/ldapmodify.html
-def create_ldap_user(username, fullname, password):
+def create_ldap_user(username:str, fullname:str, password:str):
+    """
+    Creates normal user in a ldap server
+
+    Check documentation: 
+
+    https://docs.oracle.com/cd/E22289_01/html/821-1279/ldapmodify.html
+    """
     # Define SSH credentials
     load_dotenv()
     ssh = SSHClient()

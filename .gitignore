@@ -5,3 +5,4 @@ ssh_config.yaml
 arcane_creator.ps1
 ldap_user_registrar.psm1
 __pycache__
+logs.log
