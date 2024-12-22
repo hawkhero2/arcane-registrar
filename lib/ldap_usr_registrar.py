@@ -1,6 +1,10 @@
+from lib.globals_vars import LOGS_FORMAT,LOGFILE
 from paramiko import SSHClient
 from dotenv import load_dotenv
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 def create_ldap_user(username:str, fullname:str, password:str):
     """
@@ -10,33 +14,37 @@ def create_ldap_user(username:str, fullname:str, password:str):
 
     https://docs.oracle.com/cd/E22289_01/html/821-1279/ldapmodify.html
     """
+    
+    logging.basicConfig(filename=LOGFILE, level=logging.INFO, format=LOGS_FORMAT)
     # Define SSH credentials
     load_dotenv()
     ssh = SSHClient()
     ssh.load_system_host_keys()
 
-    print("Attempting to connect to 10.100.0.30")
-    print(f"Username: {os.getenv('SSH_USER')}")
-    print(f"Password: {os.getenv('SSH_PASSWORD')}")
+    logger.info("Attempting SSH...")
+    print(f"Attempting to connect to {os.getenv("SSH_HOSTNAME")}")
+    print(f"Username: {os.getenv("SSH_USER")}")
+    print(f"Password: {os.getenv("SSH_PASSWORD")}")
+    print("------------------------------------------------")
 
-    ssh.connect(hostname="10.100.0.30", username=os.getenv('SSH_USER'), password=os.getenv('SSH_PASSWORD'))
+    ssh.connect(hostname=os.getenv("SSH_HOSTNAME"), username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
 
-    _stdin, _stdout, _stderr = ssh.exec_command(f"""cat <<EOF > /tmp/filename.ldif
-    dn: uid={username},cn=users,dc=hometest,dc=ro
-    objectclass: top
-    objectclass: person
-    objectclass: organizationalPerson
-    objectclass: inetorgPerson
-    cn: {username}
-    uid: {username}
-    gecos: {fullname}
-    sn: {username}
-    mail: {username}@hometest.ro
-    userPassword: {password}
-    """)
+    logger.info("Creating ldif file")
+    print(f"Loading into ldif file the following:\nusername:{username},\nfullname:{fullname},\npassword:{password}")
+
+    _stdin, _stdout, _stderr = ssh.exec_command(f"""cat <<EOF > /tmp/cr_usr.ldif\ndn: uid={username},cn=users,dc=hometest,dc=ro\nchangetype: add\nobjectclass: top\nobjectclass: person\nobjectclass: organizationalPerson\nobjectclass: inetorgPerson\ncn: {username}\nuid: {username}\nsn: {username}\nmail: {username}@hometest.ro\nuserPassword: {password}""")
+
+    print("------------------------------------------------")
+    print("Printing output from creating file on linux system...")
     print(_stdout.read().decode())
     print(_stderr.read().decode())
-    _stdin, _stdout, _stderr = ssh.exec_command("ldapmodify -x -c \"dc=hometest,dc=ro\" -H ldap://10.100.0.30 -D \"uid=andrei123,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -a -f /tmp/filename.ldif")
+    print("------------------------------------------------")
+
+    print("Attempting to create user based on ldif file...")
+    _stdin, _stdout, _stderr = ssh.exec_command("ldapmodify -x -c -V -H ldap://10.100.0.30 -D \"uid=root,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -f /tmp/cr_usr.ldif")
+    print("------------------------------------------------")
+
+    print("Printing output from attempting to create user based on the ldif file...")
     print(_stdout.read().decode())
     print(_stderr.read().decode())
     ssh.close()
