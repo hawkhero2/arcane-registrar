@@ -18,16 +18,7 @@ def main():
     logger.info("Started ...")
 
     if(args.check == "y"):
-        output,err=ldap_search("objectclass=*") 
-        if(output !=""):
-            print("Printing the output from ldapsearch")
-            for line in output:
-                print(line)
-        else:
-            print("Ouput is empty,\nPrinting error:")
-            for line in err:
-                print(err)
-    
+        ldap_search("objectclass=*") 
     else:
         # Just for testing
         if args.username == "" or args.fullname == "" or args.password == "":
@@ -40,6 +31,7 @@ def main():
         else:
             create_ldap_user(args.username, args.fullname, args.password)
 
-    logger.info("Finished running..")
+    logger.info("Finished running arcane creator")
+
 if __name__=="__main__":
     main()
