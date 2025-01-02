@@ -6,3 +6,4 @@ arcane_creator.ps1
 ldap_user_registrar.psm1
 __pycache__
 logs.log
+output-ldapsearch.txt

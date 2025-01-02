@@ -23,7 +23,7 @@ def ldap_search(objectClass: str):
     load_dotenv()
     logging.basicConfig(format=LOGS_FORMAT, filename=LOGFILE, level=logging.INFO)
     logger.info(f"Running {__name__} ...")
-    logger.info(f"SSH-ing into {os.getenv("SSH_HOSTNAME")} ")
+    logger.info(f"SSH-ing into {os.getenv('SSH_HOSTNAME')} ")
 
     ssh = SSHClient()
     ssh.load_system_host_keys()
@@ -31,7 +31,9 @@ def ldap_search(objectClass: str):
 
     _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid=andrei123,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -b dc=hometest,dc=ro \"({objectClass})\"")
 
-    print(_stdout.read().decode())
+    outp = _stdout.read().decode()
+    print(outp)
+    
     print(_stderr.read().decode())
     ssh.close()
 

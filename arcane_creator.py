@@ -6,11 +6,11 @@ import argparse
 import logging
 
 logger = logging.getLogger("Arcane Creator")
-parser = argparse.ArgumentParser(description="Provide user to be created")
+parser = argparse.ArgumentParser(description="Utility script for creating users in multiple environments and performing ldapsearch")
 parser.add_argument("--username", help="Username to be created",default="")
 parser.add_argument("--fullname", help="Full name of the user",default="")
 parser.add_argument("--password", help="Password for the user",default="")
-parser.add_argument("--check", help="Perform ldapsearch on ldap, provide a boolean", choices=["y","n"], default="n")
+parser.add_argument("--check", help="Perform ldapsearch on ldap, provide y/n", choices=["y","n"], default="n")
 args = parser.parse_args()
 
 def main():
