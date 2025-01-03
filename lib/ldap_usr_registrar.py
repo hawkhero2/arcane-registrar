@@ -41,7 +41,7 @@ def create_ldap_user(username:str, fullname:str, password:str):
     print("------------------------------------------------")
 
     print("Attempting to create user based on ldif file...")
-    _stdin, _stdout, _stderr = ssh.exec_command("ldapmodify -x -c -V -H ldap://10.100.0.30 -D \"uid=root,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -f /tmp/cr_usr.ldif")
+    _stdin, _stdout, _stderr = ssh.exec_command(f"ldapmodify -x -c -V -H ldap://{os.getenv('SSH_HOSTNAME')} -D \"uid=root,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -f /tmp/cr_usr.ldif")
     print("------------------------------------------------")
 
     print("Printing output from attempting to create user based on the ldif file...")
