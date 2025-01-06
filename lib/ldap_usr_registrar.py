@@ -32,7 +32,7 @@ def create_ldap_user(username:str, fullname:str, password:str):
     logger.info("Creating ldif file")
     print(f"Loading into ldif file the following:\nusername:{username},\nfullname:{fullname},\npassword:{password}")
 
-    _stdin, _stdout, _stderr = ssh.exec_command(f"""cat <<EOF > /tmp/cr_usr.ldif\ndn: uid={username},cn=users,dc=hometest,dc=ro\nchangetype: add\nobjectclass: top\nobjectclass: person\nobjectclass: organizationalPerson\nobjectclass: inetorgPerson\ncn: {username}\nuid: {username}\nsn: {username}\nmail: {username}@hometest.ro\nuserPassword: {password}""")
+    _stdin, _stdout, _stderr = ssh.exec_command(f"""cat <<EOF > /tmp/cr_usr.ldif\ndn: uid={username},cn=users,dc=hometest,dc=ro\nchangetype: add\nobjectclass: top\nobjectClass: posixAccount\nobjectClass: shadowAccount\nobjectclass: person\nobjectclass: organizationalPerson\nobjectclass: inetorgPerson\nobjectClass: apple-user\nobjectClass: sambaSamAccount\nobjectClass: sambaIdmapEntry\nobjectClass: extensibleObject\ncn: {username}\nuid: {username}\nuidNumber: 100002\ngidNumber: 100003\nhomeDirectory: /home/{username}\nloginShell: /bin/sh\ngecos: {fullname}\nsn: {username}\nmail: {username}@hometest.ro\nuserPassword: {password}\nauthAuthority: ;basic;\nsambaSID: S-1-5-21-337860771-1958857223-4022494384-1007""")
 
     print("------------------------------------------------")
     print("Printing output from creating file on linux system...")
