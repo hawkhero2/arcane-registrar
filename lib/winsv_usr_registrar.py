@@ -17,3 +17,9 @@ def create_winsv_user(username:str, fullname:str, password:str):
     load_dotenv()
     ssh = SSHClient()
     ssh.load_system_host_keys()
+
+    # Commands to run: 
+    # net user {username} {password} /add
+    # net localgroup groupName {username} /add
+
+    ssh.connect(f"{os.getenv('SSH_HOSTNAME')}", username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
