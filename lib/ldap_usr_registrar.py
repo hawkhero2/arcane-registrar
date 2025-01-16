@@ -22,12 +22,12 @@ def create_ldap_user(username:str, fullname:str, password:str):
     ssh.load_system_host_keys()
 
     logger.info("Attempting SSH...")
-    print(f"Attempting to connect to {os.getenv('SSH_HOSTNAME')}")
+    print(f"Attempting to connect to {os.getenv('SSH_HOST')}")
     print(f"Username: {os.getenv('SSH_USER')}")
     print(f"Password: {os.getenv('SSH_PASSWORD')}")
     print("------------------------------------------------")
 
-    ssh.connect(hostname=os.getenv("SSH_HOSTNAME"), username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
+    ssh.connect(hostname=os.getenv("SSH_HOST"), username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
 
     logger.info("Creating ldif file")
     print(f"Loading into ldif file the following:\nusername:{username},\nfullname:{fullname},\npassword:{password}")

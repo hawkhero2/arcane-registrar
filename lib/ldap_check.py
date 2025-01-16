@@ -27,7 +27,7 @@ def ldap_search(objectClass: str):
 
     ssh = SSHClient()
     ssh.load_system_host_keys()
-    ssh.connect(hostname=os.getenv("SSH_HOSTNAME"), username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
+    ssh.connect(hostname=os.getenv("SSH_HOST"), username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
 
     _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid=andrei123,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -b dc=hometest,dc=ro \"({objectClass})\"")
 

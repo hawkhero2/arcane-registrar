@@ -5,6 +5,8 @@ import logging
 import os
 
 logger = logging.getLogger(__name__)
+# Purely for testing name
+groupName="group1"
 
 def create_winsv_user(username:str, fullname:str, password:str):
     """
@@ -22,4 +24,10 @@ def create_winsv_user(username:str, fullname:str, password:str):
     # net user {username} {password} /add
     # net localgroup groupName {username} /add
 
-    ssh.connect(f"{os.getenv('SSH_HOSTNAME')}", username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
+    ssh.connect(f"{os.getenv('W_SSH_HOST')}", username=os.getenv("W_SSH_USER"), password=os.getenv("W_SSH_PASSWORD"))
+
+    _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net user {username} {password} /add")
+    print(_stdout.read().decode())
+
+    _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net localgroup {groupName} {username} /add")
+    print(_stdout.read().decode())
