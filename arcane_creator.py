@@ -1,5 +1,7 @@
 from lib.ldap_usr_registrar import create_ldap_user
+from lib.winsv_usr_registrar import create_winsv_user
 from lib.ldap_check import ldap_search
+from lib.rocketchat_usr_registrar import create_rocketchat_user
 from lib.globals_vars import LOGFILE, LOGS_FORMAT
 from paramiko import SSHClient
 import argparse
@@ -10,26 +12,33 @@ parser = argparse.ArgumentParser(description="Utility script for creating users 
 parser.add_argument("--username", help="Username to be created",default="")
 parser.add_argument("--fullname", help="Full name of the user",default="")
 parser.add_argument("--password", help="Password for the user",default="")
-parser.add_argument("--check", help="Perform ldapsearch on ldap, provide y/n", choices=["y","n"], default="n")
+parser.add_argument("--email", help="Provide email for the user, needed for chat account", default="")
+# parser.add_argument("--check", help="Perform ldapsearch on ldap, provide y/n", choices=["y","n"], default="n")
 args = parser.parse_args()
 
 def main():
     logging.basicConfig(filename=LOGFILE, level=logging.INFO, format=LOGS_FORMAT)
     logger.info("Started ...")
 
-    if(args.check == "y"):
-        ldap_search("objectclass=*") 
-    else:
-        # Just for testing
-        if args.username == "" or args.fullname == "" or args.password == "":
-            print("Didnt' provide values for either --username, --fullname or password.\nUsing some values for testing...") 
-            usr ="gog13"
-            fn="gog k"
-            pw="Parola123$"
-            create_ldap_user(usr,fn,pw)
+    create_ldap_user(username=args.username, fullname=args.fullname, password=args.password)
+    create_winsv_user(username=args.username, fullname=args.fullname, password=args.password) 
+    create_rocketchat_user(username=args.username, fullname=args.fullname, password=args.password, email=args.email) 
 
-        else:
-            create_ldap_user(args.username, args.fullname, args.password)
+    # if(args.checkRooms == "y"):
+    #     create_rocketchat_user(username="testuser125",fullname="Test name",password="Parola123$",email="testuser12@gmail.com")
+    # if(args.check == "y"):
+    #     ldap_search("objectclass=*") 
+    # else:
+    #     # Just for testing
+    #     if args.username == "" or args.fullname == "" or args.password == "":
+    #         print("Didnt' provide values for either --username, --fullname or password.\nUsing some values for testing...") 
+    #         usr ="gog13"
+    #         fn="gog k"
+    #         pw="Parola123$"
+    #         create_ldap_user(usr,fn,pw)
+
+    #     else:
+    #         create_ldap_user(args.username, args.fullname, args.password)
 
     logger.info("Finished running arcane creator")
 
