@@ -1,6 +1,6 @@
-from lib.ldap_usr_registrar import create_ldap_user
-from lib.winsv_usr_registrar import create_winsv_user
-from lib.rocketchat_usr_registrar import create_rocketchat_user
+from lib.ldap_usr import create_ldap_user
+from lib.winsv_usr import create_winsv_user
+from lib.rocketchat_usr import create_rocketchat_user
 from lib.globals_vars import LOGFILE, LOGS_FORMAT
 import argparse
 import logging
@@ -17,6 +17,9 @@ args = parser.parse_args()
 def main():
     logging.basicConfig(filename=LOGFILE, level=logging.INFO, format=LOGS_FORMAT)
     logger.info("Started ...")
+    print("Received parameteres...")
+    print("Executing script...")
+    print("------------------------------------------------")
 
     create_ldap_user(username=args.username, fullname=args.fullname, password=args.password)
     create_winsv_user(username=args.username, fullname=args.fullname, password=args.password) 

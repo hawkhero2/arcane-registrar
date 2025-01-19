@@ -30,12 +30,16 @@ def create_winsv_user(username:str, fullname:str, password:str):
     # net user {username} {password} /add
     # net localgroup groupName {username} /add
 
-    _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net user {username} {password} /add")
-    print(_stdout.read().decode())
-    logger.log(f"{_stdout.read().decode()}")
-    logger.log(f"{_sterr.read().decode()}")
+    try:
+        _stdin, _stdout, _stderr= ssh.exec_command(f"powershell net user {username} {password} /add")
+        print(_stdout.read().decode())
+    except:
+        print(_stderr.read().decode())
+        logger.log(f"{_stderr.read().decode()}")
 
-    _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net localgroup {groupName} {username} /add")
-    print(_stdout.read().decode())
-    logger.log(f"{_stdout.read().decode()}")
-    logger.log(f"{_sterr.read().decode()}")
+    if _stderr.read().decode() == "":
+        try:
+            _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net localgroup {groupName} {username} /add")
+            print(_stdout.read().decode())
+        except:
+            logger.log(f"{_sterr.read().decode()}")
