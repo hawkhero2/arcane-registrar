@@ -1,9 +1,7 @@
 from lib.ldap_usr_registrar import create_ldap_user
 from lib.winsv_usr_registrar import create_winsv_user
-from lib.ldap_check import ldap_search
 from lib.rocketchat_usr_registrar import create_rocketchat_user
 from lib.globals_vars import LOGFILE, LOGS_FORMAT
-from paramiko import SSHClient
 import argparse
 import logging
 
