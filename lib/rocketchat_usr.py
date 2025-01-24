@@ -20,7 +20,7 @@ def create_rocketchat_user(username:str, fullname:str, password:str, email:str):
     load_dotenv()
     
     try:
-        rocketApi = RocketChatAPI(settings={"username":f"{os.getenv("RC_ACC")}","password":f"{os.getenv("RC_PASS")}","domain":f"{os.getenv("RC_URL")}"})
+        rocketApi = RocketChatAPI(settings={"username":f"{os.getenv('RC_ACC')}","password":f"{os.getenv('RC_PASS')}","domain":f"{os.getenv('RC_URL')}"})
     except:
         print("Error when attempting to login...")
         logger.error("Error while attempting to login")

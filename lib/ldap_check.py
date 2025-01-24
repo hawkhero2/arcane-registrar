@@ -7,7 +7,7 @@ import os
 
 logger = logging.getLogger(__name__)
 
-def ldap_search(objectClass: str):
+def ldap_search(objectClass: str = "objectclass=*"):
     """
 
     Provide objectClass for the dn search
@@ -23,13 +23,13 @@ def ldap_search(objectClass: str):
     load_dotenv()
     logging.basicConfig(format=LOGS_FORMAT, filename=LOGFILE, level=logging.INFO)
     logger.info(f"Running {__name__} ...")
-    logger.info(f"SSH-ing into {os.getenv('SSH_HOSTNAME')} ")
+    logger.info(f"SSH-ing into {os.getenv('SSH_HOST')} ")
 
     ssh = SSHClient()
     ssh.load_system_host_keys()
     ssh.connect(hostname=os.getenv("SSH_HOST"), username=os.getenv("SSH_USER"), password=os.getenv("SSH_PASSWORD"))
 
-    _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid=andrei123,cn=users,dc=hometest,dc=ro\" -w \"Parola123!\" -b dc=hometest,dc=ro \"({objectClass})\"")
+    _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -x -H ldaps://{os.getenv('SSH_HOST')} -D \"uid={os.getenv('LDAP_ACC')},cn=users,dc={os.getenv('DC1')},dc={os.getenv('DC2')}\" -w \"{os.getenv('LDAP_PASS')}\" -b dc={os.getenv('DC1')},dc={os.getenv('DC2')} {objectClass}")
 
     outp = _stdout.read().decode()
     print(outp)
