@@ -8,3 +8,5 @@ __pycache__
 logs.log
 output-ldapsearch.txt
 test_run.py
+usr.txt
+output

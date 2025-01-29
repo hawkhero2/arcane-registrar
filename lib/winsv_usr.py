@@ -1,6 +1,7 @@
 from lib.globals_vars import LOGS_FORMAT,LOGFILE
 from paramiko import SSHClient
-from dotenv import load_dotenv
+from logging.handlers import RotatingFileHandler
+from dotenv import dotenv_values
 import logging
 import os
 
@@ -19,12 +20,18 @@ def create_winsv_user(username:str, fullname:str, password:str):
 
     """
 
-    logging.basicConfig(filename=LOGFILE, level=logging.INFO, format=LOGS_FORMAT)
+    config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
+    
+    handler = RotatingFileHandler(filename=LOGFILE, maxBytes=1000000, backupCount=5, encoding="utf-8")
+    handler.setFormatter(logging.Formatter(LOGS_FORMAT))
+
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
+
     # Define SSH credentials
-    load_dotenv()
     ssh = SSHClient()
     ssh.load_system_host_keys()
-    ssh.connect(f"{os.getenv('W_SSH_HOST')}", username=os.getenv("W_SSH_USER"), password=os.getenv("W_SSH_PASSWORD"))
+    ssh.connect(f"{config['W_SSH_HOST']}", username=config["W_SSH_USER"], password=config["W_SSH_PASSWORD"])
 
     # Commands to run: 
     # net user {username} {password} /add
