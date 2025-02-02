@@ -72,8 +72,12 @@ def get_uidNumber() -> int:
     print("-"*100)
 
     print(f"Using the following credentials:\nuser:{config['LDAP_ACC']}\npass:{config['LDAP_PASS']}")
-    _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
-    
+
+    if(config['ENV'] == "DEV"):
+        _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
+    if(config['ENV'] == "PROD"):
+        _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -x -H ldaps://{config['SSH_HOST']} -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
+
     print(f"ldapsearch -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
     print("-"*100)
 

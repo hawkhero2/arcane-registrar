@@ -1,9 +1,7 @@
 from lib.globals_vars import LOGFILE,LOGS_FORMAT
 from rocketchat.api import RocketChatAPI
-from logging.handlers import RotatingFileHandler
 from dotenv import dotenv_values
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
@@ -18,11 +16,7 @@ def create_rocketchat_user(username:str, fullname:str, password:str, email:str):
     """
 
     config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
-    handler = RotatingFileHandler(filename=LOGFILE, maxBytes=1000000, backupCount=5, encoding="utf-8")
-    handler.setFormatter(logging.Formatter(LOGS_FORMAT))
-
-    logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
+    logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
     
     logger.info(f"Accessing user API server URL: {config['RC_URL']} using username: {config['RC_ACC']}")
     try:
