@@ -1,11 +1,13 @@
 from lib.globals_vars import LOGFILE,LOGS_FORMAT
-from rocketchat.api import RocketChatAPI
+from rocketchat_API.rocketchat import RocketChat
 from dotenv import dotenv_values
+from pprint import pprint
+import time
 import logging
 
 logger = logging.getLogger(__name__)
 
-def create_rocketchat_user(username:str, fullname:str, password:str, email:str):
+def create_rocketchat_user(users_file):
     """
     Creates users on RocketChat server
 
@@ -15,19 +17,44 @@ def create_rocketchat_user(username:str, fullname:str, password:str, email:str):
     @email: Provide an email, it is required;Does not need to be valid
     """
 
-    config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
-    logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
-    
-    logger.info(f"Accessing user API server URL: {config['RC_URL']} using username: {config['RC_ACC']}")
-    try:
-        rocketApi = RocketChatAPI(settings={"username":f"{config['RC_ACC']}","password":f"{config['RC_PASS']}","domain":f"{config['RC_URL']}"})
-    except Exception as e:
-        print("Error when attempting to login...")
-        logger.error("Error while attempting to login", exc_info=e)
+    print("-"*100)
+    print(f"Running : {__name__}")
 
-    try:    
-        rocketApi.create_user(email=email, name=fullname, password=password, username=username, active=True, roles=['user'], join_default_channels=True, send_welcome_email=False, require_password_change=False, verified=True)
-    except:
-        print("-"*100)
-        print("Error while attempting to create user...")
-        logger.error("Error while attempting to create user...")
+    logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
+    config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
+
+    rc_url = config["RC_URL"]
+    rc_acc = config["RC_ACC"]
+    rc_pass = config["RC_PASS"]
+    
+    logger.info(f"Accessing user API server URL:{rc_url} using username: {rc_acc}, password: {rc_pass}")
+    try:
+        rocketAPI = RocketChat(user=rc_acc,password=rc_pass,server_url=rc_url)
+        print(f"Status : {rocketAPI.me()}")
+        print(f"Connected to RocketChat Server : {rc_url} , acc: {rc_acc}, pass: {rc_pass}")
+        with open(users_file) as f:
+            for line in f:
+                try:
+                    username,fullname,password,email = line.split(",")
+                    print("-"*100)
+
+                    respo = rocketAPI.users_create(email=email,
+                                                name=fullname,
+                                                password=password,
+                                                username=username)
+
+                    time.sleep(4)
+
+                    print(f"user : {username},\n fullname: {fullname},\n password: {password},\n email: {email}\n")
+                    print("-"*100)
+                    print(f"Response for user: {username}")
+                    print(f"{respo.content.decode()}")
+                    print("-"*100)
+
+                except Exception as e:
+                    print(f"Error when creating user: {username} \n{e}")
+                    logger.error(f"Error when creating user: {username} \n{e}")
+
+    except Exception as e:
+        print(f"Error when attempting to login... \n{e}")
+        logger.error(f"Error while attempting to login \n{e}", exc_info=e)

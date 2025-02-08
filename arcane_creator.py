@@ -3,7 +3,6 @@ from lib.ldap_usr import create_ldap_user
 from lib.winsv_usr import create_winsv_user
 from lib.rocketchat_usr import create_rocketchat_user
 from lib.globals_vars import LOGFILE, LOGS_FORMAT
-from time import sleep
 import argparse
 import logging
 import os
@@ -22,6 +21,7 @@ args = parser.parse_args()
 def main():
 
     logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
+    
     logger.info("Started ...")
 
     print("Reading parameters")
@@ -35,36 +35,33 @@ def main():
             # Since all args are non empty we proceed with user creation
             print(f"Creating single user provided: {args.username}")
             create_ldap_user(username=f"{args.username}", fullname=f"{args.fullname}", password=f"{args.password}")
-            # sleep(5)
-            # create_winsv_user(username=args.username, fullname=args.fullname, password=args.password) 
-            # sleep(5)
-            # create_rocketchat_user(username=args.username, fullname=args.fullname, password=args.password, email=args.email) 
-            # sleep(5)
+            create_winsv_user(username=args.username, fullname=args.fullname, password=args.password) 
+            create_rocketchat_user(username=args.username, fullname=args.fullname, password=args.password, email=args.email) 
         else:
             print("Missing arguments, checking if file was passed....")
+
     if(args.file != "" and os.path.exists(args.file)):
         uidNumber = get_uidNumber()
         with open(args.file, "r") as f:
             for line in f:
+                
                 uidNumber=uidNumber+1
                 print(f"uidNumber: {str(uidNumber)}")
                 usr,fn,pw, mail = line.split(",")
-                sleep(5)
+
                 create_ldap_user(username=usr, fullname=fn, password=pw, uidNumber=uidNumber)
-                sleep(5)
-                # create_winsv_user(username=usr, fullname=fn, password=pw)
-                # sleep(5)
-                # create_rocketchat_user(username=usr, fullname=fn, password=pw, email=mail)
-                # sleep(5)
-    if(args.check != ""):
-        print("You did not provide any user or file...\nRunning a ldap search")
-        ldap_search()
+                create_winsv_user(username=usr, fullname=fn, password=pw)
+                create_rocketchat_user(args.file)
 
     else:
         print("Missing arguments for single user creation, or file for multiple users")
         logger.error("Missing arguments for single user creation, or file for multiple users")
         print("Exiting...")
         logger.info("Exiting...")
+
+    if(args.check != ""):
+        print("You did not provide any user or file...\nRunning a ldap search")
+        ldap_search()
 
     logger.info("Finished running arcane creator")
 

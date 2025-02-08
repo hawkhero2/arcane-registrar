@@ -23,23 +23,31 @@ def ldap_search(objectClass: str = "objectclass=*"):
 
     config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
     
-    handler = RotatingFileHandler(filename=LOGFILE, maxBytes=1000000, backupCount=5, encoding="utf-8")
-    handler.setFormatter(logging.Formatter(LOGS_FORMAT))
-    logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
+    ldap_acc = config["LDAP_ACC"]
+    ldap_pass = config["LDAP_PASS"]
+    ldap_dc1 = config["DC1"]
+    ldap_dc2 = config["DC2"]
+    ssh_usr = config["SSH_USER"]
+    ssh_pass = config["SSH_PASSWORD"]
+    ssh_host = config["SSH_HOST"]
+
+    logging.basicConfig(filemode=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
 
     logger.info(f"Running {__name__} ...")
     logger.info(f"SSH-ing into {config['SSH_HOST']} ")
 
     ssh = SSHClient()
     ssh.load_system_host_keys()
-    ssh.connect(hostname=config["SSH_HOST"], username="andrei", password=config["SSH_PASSWORD"])
+    ssh.connect(hostname=ssh_host,
+                username=ssh_usr,
+                password=ssh_pass)
+
     print("-"*100)
 
-    print(f"Using the following credentials:\nuser:{config['LDAP_ACC']}\npass:{config['LDAP_PASS']}")
-    _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
+    print(f"Using the following credentials:\nuser:{ldap_acc}\npass:{ldap_pass}")
+    _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid={ldap_acc},cn=users,dc={ldap_dc1},dc={ldap_dc2}\" -w \"{ldap_pass}\" -b dc={ldap_dc1},dc={ldap_dc2} \"({objectClass})\"")
     print("-"*100)
-    print(f"ldapsearch -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
+    print(f"ldapsearch -D \"uid={ldap_acc},cn=users,dc={ldap_dc1},dc={ldap_dc2}\" -w \"{ldap_pass}\" -b dc={ldap_dc1},dc={ldap_dc2} \"({objectClass})\"")
 
     print("-"*100)
     outp = _stdout.read().decode()
@@ -56,29 +64,35 @@ def get_uidNumber() -> int:
     objectClass="uidNumber=*"
     uidNumber=""
     config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
+    logging.basicConfig(filemode=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
 
-    handler = RotatingFileHandler(filename=LOGFILE, maxBytes=1000000, backupCount=5, encoding="utf-8")
-    handler.setFormatter(logging.Formatter(LOGS_FORMAT))
+    ldap_acc = config["LDAP_ACC"]
+    ldap_pass = config["LDAP_PASS"]
+    ldap_dc1 = config["DC1"]
+    ldap_dc2 = config["DC2"]
+    ssh_usr = config["SSH_USER"]
+    ssh_pass = config["SSH_PASSWORD"]
+    ssh_host = config["SSH_HOST"]
 
     logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
-
     logger.info(f"Running {__name__} ...")
     logger.info(f"SSH-ing into {config['SSH_HOST']} ")
+    print("-"*100)
 
     ssh = SSHClient()
     ssh.load_system_host_keys()
-    ssh.connect(hostname=config["SSH_HOST"], username="andrei", password=config["SSH_PASSWORD"])
-    print("-"*100)
+    ssh.connect(hostname=ssh_host, username=ssh_usr, password=ssh_pass)
 
-    print(f"Using the following credentials:\nuser:{config['LDAP_ACC']}\npass:{config['LDAP_PASS']}")
+    print(f"Using the following credentials:\nuser:{ldap_acc}\npass:{ldap_pass}")
 
     if(config['ENV'] == "DEV"):
-        _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
+        cmd = f"ldapsearch -D \"uid={ldap_acc},cn=users,dc={ldap_dc1},dc={ldap_dc2}\" -w \"{ldap_pass}\" -b dc={ldap_dc1},dc={ldap_dc2} \"({objectClass})\""
+        _, _stdout, _stderr = ssh.exec_command(cmd)
     if(config['ENV'] == "PROD"):
-        _, _stdout, _stderr = ssh.exec_command(f"ldapsearch -x -H ldaps://{config['SSH_HOST']} -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
+        cmd = f"ldapsearch -x -H ldaps://{ssh_host} -D \"uid={ldap_acc},cn=users,dc={ldap_dc1},dc={ldap_dc2}\" -w \"{ldap_pass}\" -b dc={ldap_dc1},dc={ldap_dc2} \"({objectClass})\""
+        _, _stdout, _stderr = ssh.exec_command()
 
-    print(f"ldapsearch -D \"uid={config['LDAP_ACC']},cn=users,dc={config['DC1']},dc={config['DC2']}\" -w \"{config['LDAP_PASS']}\" -b dc={config['DC1']},dc={config['DC2']} \"({objectClass})\"")
+    print(f"ldapsearch -D \"uid={ldap_acc},cn=users,dc={ldap_dc1},dc={ldap_dc2}\" -w \"{ldap_pass}\" -b dc={ldap_dc1},dc={ldap_dc2} \"({objectClass})\"")
     print("-"*100)
 
     outp = _stdout.read().decode().split("\n")

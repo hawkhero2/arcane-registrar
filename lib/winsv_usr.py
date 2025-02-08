@@ -18,14 +18,20 @@ def create_winsv_user(username:str, fullname:str, password:str):
 
     """
 
+    print("-"*100)
+    print(f"Running: {__name__}")
     config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
+    
+    win_ssh_usr = config["W_SSH_USER"]
+    win_ssh_pass = config["W_SSH_PASSWORD"]
+    win_ssh_host = config["W_SSH_HOST"]
     
     logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
 
     # Define SSH credentials
     ssh = SSHClient()
     ssh.load_system_host_keys()
-    ssh.connect(f"{config['W_SSH_HOST']}", username=config["W_SSH_USER"], password=config["W_SSH_PASSWORD"])
+    ssh.connect(hostname=win_ssh_host, username=win_ssh_usr, password=win_ssh_pass)
 
     # Commands to run: 
     # net user {username} {password} /add
