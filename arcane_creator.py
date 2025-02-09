@@ -22,7 +22,8 @@ def main():
 
     logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
     
-    logger.info("Started ...")
+    logger.info("Running Arcane Creator...")
+    print("Running Arcane Creator...")
 
     print("Reading parameters")
     print("-"*100)
@@ -51,7 +52,7 @@ def main():
 
                 create_ldap_user(username=usr, fullname=fn, password=pw, uidNumber=uidNumber)
                 create_winsv_user(username=usr, fullname=fn, password=pw)
-                create_rocketchat_user(args.file)
+                create_rocketchat_user(username=usr,fullname=fn, password=pw, email=mail)
 
     else:
         print("Missing arguments for single user creation, or file for multiple users")
