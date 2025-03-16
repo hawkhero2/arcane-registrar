@@ -1,4 +1,4 @@
-from lib.globals_vars import LOGS_FORMAT,LOGFILE
+from lib.globals_vars import LOGS_FORMAT,LOGFILE, ENV
 from paramiko import SSHClient
 from dotenv import dotenv_values
 import logging
@@ -19,26 +19,21 @@ def create_winsv_user(username:str, fullname:str, password:str):
 
     """
 
+    env = ENV()
     logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
 
     print("-"*100)
     print(f"Running: {__name__}")
     logger.info(f"Running: {__name__}")
-
-    config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
     
-    win_ssh_usr = config["W_SSH_USER"]
-    win_ssh_pass = config["W_SSH_PASSWORD"]
-    win_ssh_host = config["W_SSH_HOST"]
-
     # Define SSH credentials
     ssh = SSHClient()
     ssh.load_system_host_keys()
 
-    print(f"SSH-ing into\nHost: {win_ssh_host}")
-    logger.info(f"SSH-ing into\nHost: {win_ssh_host}")
+    print(f"SSH-ing into\nHost: {env.win_ssh_host}")
+    logger.info(f"SSH-ing into\nHost: {env.win_ssh_host}")
 
-    ssh.connect(hostname=win_ssh_host, username=win_ssh_usr, password=win_ssh_pass)
+    ssh.connect(hostname=env.win_ssh_host, username=env.win_ssh_user, password=env.win_ssh_pw)
 
     # Commands to run: 
     # net user {username} {password} /add
