@@ -1,13 +1,11 @@
-from lib.globals_vars import LOGFILE,LOGS_FORMAT
+from lib.globals_vars import LOGFILE,LOGS_FORMAT, ENV
 from rocketchat_API.rocketchat import RocketChat
-from dotenv import dotenv_values
-from pprint import pprint
 import time
 import logging
 
 logger = logging.getLogger(__name__)
 
-def create_rocketchat_user(username, fullname, password, name, email):
+def create_rocketchat_user(username, fullname, password, email):
     """
     Creates users on RocketChat server
 
@@ -21,18 +19,17 @@ def create_rocketchat_user(username, fullname, password, name, email):
     print(f"Running : {__name__}")
 
     logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
-    config = dotenv_values(r"C:\Users\User\Documents\Github\arcane-registrar\.env")
+    env = ENV()
 
-    rc_url = config["RC_URL"]
-    rc_acc = config["RC_ACC"]
-    rc_pass = config["RC_PASS"]
-    
-    logger.info(f"Accessing RocketChatAPI server URL:{rc_url} using username: {rc_acc}, password: {rc_pass}")
+    logger.info(f"Accessing RocketChatAPI server URL:{env.rocket_url} using username: {env.rocket_acc}, password: {env.rocket_pw}")
     try:
-        rocketAPI = RocketChat(user=rc_acc,password=rc_pass,server_url=rc_url)
-        print(f"Status : {rocketAPI.me()}")
-        print(f"Connected to RocketChat Server : {rc_url} , acc: {rc_acc}, pass: {rc_pass}")
-        logger.info(f"Connected to RocketChat Server: {rc_url}")
+        rocketAPI = RocketChat(user=env.rocket_acc,
+                               password=env.rocket_pw,
+                               server_url=env.rocket_url)
+
+        # print(f"Status : {rocketAPI.me()}")
+        print(f"Connected to RocketChat Server : {env.rocket_url} , acc: {env.rocket_acc}")
+        logger.info(f"Connected to RocketChat Server: {env.rocket_url}")
         try:
             print("-"*100)
             respo = rocketAPI.users_create(email=email,
