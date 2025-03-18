@@ -4,7 +4,6 @@ from logging.handlers import RotatingFileHandler
 from dotenv import dotenv_values
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 def ldap_search(objectClass: str = "objectclass=*"):

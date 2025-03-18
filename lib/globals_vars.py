@@ -27,3 +27,4 @@ class ENV():
     ldap_acc = config["LDAP_ACC"]
     ldap_pw = config["LDAP_PASSWORD"]
     env = config["ENV"]
+    grp = config["GROUP"]

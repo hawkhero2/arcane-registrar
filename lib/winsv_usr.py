@@ -5,9 +5,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Purely for testing name
-groupName="group1"
-
 def create_winsv_user(username:str, fullname:str, password:str):
     """
     Creates normal user in a windows server
@@ -56,7 +53,7 @@ def create_winsv_user(username:str, fullname:str, password:str):
             logger.info(f"{__name__}: Adding user: {username} to basic group")
             print("-"*100)
 
-            _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net localgroup {groupName} {username} /add")
+            _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net localgroup {env.grp} {username} /add")
             print(_stdout.read().decode())
         except:
             logger.log(f"{_sterr.read().decode()}")
