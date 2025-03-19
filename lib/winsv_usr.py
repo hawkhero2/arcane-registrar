@@ -1,6 +1,5 @@
 from lib.globals_vars import LOGS_FORMAT,LOGFILE, ENV
 from paramiko import SSHClient
-from dotenv import dotenv_values
 import logging
 
 logger = logging.getLogger(__name__)
