@@ -1,7 +1,7 @@
-from time import sleep
 from lib.globals_vars import LOGS_FORMAT,LOGFILE, ENV
 from lib.ldap_check import get_uidNumber
 from dotenv import dotenv_values
+from time import sleep
 from paramiko import SSHClient
 from paramiko import transport
 import logging
@@ -24,14 +24,12 @@ def create_ldap_user(username:str, fullname:str, password:str, uidNumber):
     ssh = SSHClient()
     ssh.load_system_host_keys()
 
-    print("-"*100)
     print(f"Running: {__name__}")
 
-    logger.info(f"Attempting SSH username: {env.ssh_user} on HOST : {env.ssh_host}")
-    print(f"Attempting SSH username: {env.ssh_user} on HOST : {env.ssh_host}")
-    print("-"*100)
-
     try:
+        logger.info(f"Attempting SSH username: {env.ssh_user} on HOST : {env.ssh_host}")
+        print(f"Attempting SSH username: {env.ssh_user} on HOST : {env.ssh_host}")
+        print("-"*100)
         ssh.connect(
             hostname=env.ssh_host,
             username=env.ssh_user,
@@ -41,7 +39,6 @@ def create_ldap_user(username:str, fullname:str, password:str, uidNumber):
         sleep(3)
 
         try:
-            print("-"*100)
             # print(f"""cat <<EOF > /tmp/cr_usr.ldif\ndn: uid={username},cn=users,dc={ldap_dc1},dc={ldap_dc2}\n"""+
             #     f"""changetype: add\nobjectclass: top\nobjectClass: posixAccount\nobjectClass: shadowAccount\nobjectclass: person\nobjectclass: organizationalPerson\nobjectclass: inetorgPerson\nobjectClass: apple-user\nobjectClass: sambaSamAccount\nobjectClass: sambaIdmapEntry\nobjectClass: extensibleObject\ncn: {username}\nuid: {username}\ngidNumber: 1000001\nuidNumber: {uidNumber}\nhomeDirectory: /home/{username}\nloginShell: /bin/sh\ngecos: {fullname}\nsn: {username}\nmail: {username}@hometest.ro\nuserPassword: {password}\nauthAuthority: ;basic;\nsambaSID: S-1-5-21-337860771-1958857223-4022494384-1007""")
             _stdin, _stdout, _stderr = ssh.exec_command(f"""cat <<EOF > /tmp/cr_usr.ldif\ndn: uid={username},cn=users,dc={env.dc1},dc={env.dc2}\nchangetype: add\nobjectclass: top\nobjectClass: posixAccount\nobjectClass: shadowAccount\nobjectclass: person\nobjectclass: organizationalPerson\nobjectclass: inetorgPerson\nobjectClass: apple-user\nobjectClass: sambaSamAccount\nobjectClass: sambaIdmapEntry\nobjectClass: extensibleObject\ncn: {username}\nuid: {username}\ngidNumber: 1000001\nuidNumber: {uidNumber}\nhomeDirectory: /home/{username}\nloginShell: /bin/sh\ngecos: {fullname}\nsn: {username}\nmail: {username}@hometest.ro\nuserPassword: {password}\nauthAuthority: ;basic;\nsambaSID: S-1-5-21-337860771-1958857223-4022494384-1007""")
@@ -87,7 +84,6 @@ def create_ldap_user(username:str, fullname:str, password:str, uidNumber):
             _stderr.close()
 
         except Exception as e:
-            print("-"*100)
             logger.error("Failed to create user",exc_info=True)
             logger.error(f"{_stderr.read().decode()}")
             logger.error(f"{_stdout.read().decode()}")
@@ -97,6 +93,7 @@ def create_ldap_user(username:str, fullname:str, password:str, uidNumber):
         print(f"Error while attempting ssh conneciton. Error:{e}")
         logger.error(f"Error while attempting ssh conneciton. Error:{e}")
 
-    print("-"*100)
     ssh.close()
+    print(f"Exiting {__name__}")
+    logger.info(f"Exiting {__name__}")
     

@@ -22,8 +22,8 @@ def main():
 
     logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
     
-    logger.info("Running Arcane Creator...")
-    print("Running Arcane Creator...")
+    logger.info(f"Running {__name__}...")
+    print(f"Running {__name__}...")
 
     print("Reading parameters")
     print("-"*100)
@@ -33,10 +33,12 @@ def main():
             args.fullname != "" and 
             args.password != "" and 
             args.email !=""):
+
             # Since all args are non empty we proceed with user creation
             uidNumber=get_uidNumber()
-            print(f"Creating single user provided: {args.username}")
-            create_ldap_user(username=f"{args.username}", fullname=f"{args.fullname}", password=f"{args.password}",uidNumber=uidNumber)
+            print(f"Single user provided: {args.username}")
+            create_ldap_user(username=f"{args.username}", fullname=f"{args.fullname}", 
+                             password=f"{args.password}",uidNumber=uidNumber)
             create_winsv_user(username=args.username, fullname=args.fullname, password=args.password) 
             create_rocketchat_user(username=args.username, fullname=args.fullname, password=args.password, email=args.email) 
         else:

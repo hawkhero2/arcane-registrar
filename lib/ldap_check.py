@@ -1,5 +1,5 @@
-from paramiko import SSHClient
 from lib.globals_vars import LOGS_FORMAT, LOGFILE, ENV
+from paramiko import SSHClient
 import logging
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ def get_uidNumber() -> int:
         _, _stdout, _stderr = ssh.exec_command(cmd)
     if(env.env == "PROD"):
         cmd = f"ldapsearch -x -H ldaps://{env.ssh_host} -D \"uid={env.ldap_acc},cn=users,dc={env.dc1},dc={env.dc2}\" -w \"{env.ldap_pw}\" -b dc={env.dc1},dc={env.dc2} \"({objectClass})\""
-        _, _stdout, _stderr = ssh.exec_command()
+        _, _stdout, _stderr = ssh.exec_command(cmd)
 
     print(f"ldapsearch -D \"uid={env.ldap_acc},cn=users,dc={env.dc1},dc={env.dc2}\" -w \"{env.ldap_pw}\" -b dc={env.dc1},dc={env.dc2} \"({objectClass})\"")
     print("-"*100)

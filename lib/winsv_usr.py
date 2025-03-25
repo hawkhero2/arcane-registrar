@@ -18,7 +18,6 @@ def create_winsv_user(username:str, fullname:str, password:str):
     env = ENV()
     logging.basicConfig(filename=LOGFILE, format=LOGS_FORMAT, level=logging.INFO)
 
-    print("-"*100)
     print(f"Running: {__name__}")
     logger.info(f"Running: {__name__}")
     
@@ -26,10 +25,12 @@ def create_winsv_user(username:str, fullname:str, password:str):
     ssh = SSHClient()
     ssh.load_system_host_keys()
 
-    print(f"SSH-ing into\nHost: {env.win_ssh_host}")
-    logger.info(f"SSH-ing into\nHost: {env.win_ssh_host}")
+    print(f"Attempting SSH username : {env.win_ssh_user} on HOST : {env.win_ssh_host}")
+    logger.info(f"Attempting SSH username : {env.win_ssh_user} on HOST : {env.win_ssh_host}")
 
-    ssh.connect(hostname=env.win_ssh_host, username=env.win_ssh_user, password=env.win_ssh_pw)
+    ssh.connect(hostname=env.win_ssh_host, 
+                username=env.win_ssh_user, 
+                password=env.win_ssh_pw)
 
     # Commands to run: 
     # net user {username} {password} /add
@@ -48,8 +49,8 @@ def create_winsv_user(username:str, fullname:str, password:str):
 
     if _stderr.read().decode() == "":
         try:
-            print(f"{__name__}: Adding user: {username} to basic group")
-            logger.info(f"{__name__}: Adding user: {username} to basic group")
+            print(f"{__name__}: Adding user: {username} to group : {env.grp}")
+            logger.info(f"{__name__}: Adding user: {username} to group : {env.grp}")
             print("-"*100)
 
             _stdin, _stdout, _sterr = ssh.exec_command(f"powershell net localgroup {env.grp} {username} /add")
